@@ -1,0 +1,61 @@
+version: '2'
+services:
+    php:
+        build:
+             context: ./service/php/
+             dockerfile: php.dockerfile
+        volumes:
+             - ./www:/var/www
+        working_dir: /var/www        
+        ports:
+             - 9000:9000  
+        tty: true
+        networks:
+             - app
+
+    nginx:
+        build:
+             context: ./service/nginx/
+             dockerfile: nginx.dockerfile
+        volumes:
+             - ./www:/var/www
+             - ./service/nginx/conf.d:/etc/nginx/conf.d
+        working_dir: /var/www
+        ports:
+             - 80:80
+        tty: true
+        networks:
+             - app    
+
+    mysql:
+         image: mysql:5.7
+         environment:
+             - "MYSQL_ROOT_PASSWORD=root"
+             - "MYSQL_DATABASE=test"
+             - "MYSQL_USER=test"
+             - "MYSQL_PASSWORD=test"
+         volumes:
+             - ./service/mysql/conf:/etc/mysql
+             - ./service/mysql/data:/mysql/data
+         ports:
+             - 3306:3306
+         tty: true
+         networks:
+             - app
+    redis:
+         image: redis:5
+         volumes:
+             - ./service/redis/redis.conf:/usr/local/etc/redis/redis.conf
+             - ./service/redis/data:/data
+         command: /bin/bash -c "redis-server /usr/local/etc/redis/redis.conf"
+         networks:
+             - app
+    memcached:
+          image: memcached
+          ports:
+             - 11211:11211
+          networks:
+             - app
+networks:
+    app:
+        driver: bridge

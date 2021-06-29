@@ -6,7 +6,7 @@ MAINTAINER  JinHuaChao
     
 RUN apt-get update \
     # 相关依赖必须手动安装
-    && apt-get install -y libfreetype6-dev libjpeg62-turbo-dev libmcrypt-dev libpng-dev \
+    && apt-get install -y git libfreetype6-dev libjpeg62-turbo-dev libmcrypt-dev libpng-dev \ 
     # memcached 的相关依赖
     && apt-get install -y libmemcached-dev zlib1g-dev \
     # 安装扩展
@@ -31,8 +31,15 @@ RUN apt-get update \
     # pecl 安装php的redis扩展
     && pecl install redis \
     # 启用redis扩展
-    && docker-php-ext-enable redis
-
+    && docker-php-ext-enable redis 
+ 
+    # composer PHP 用来管理依赖关系的工具
+RUN curl -sS https://getcomposer.org/installer \
+              | php -- --install-dir=/usr/local/bin --filename=composer \
+    # 国内镜像加速
+    
+  
+       
 #数据卷挂载
 VOLUME ['/usr/local/etc/php']
 
